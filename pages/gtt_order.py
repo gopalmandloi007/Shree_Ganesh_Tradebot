@@ -1,6 +1,6 @@
 import logging
 import requests
-from tradebot.session_manager import SessionManager, SessionError
+from tradebot.api_client import APIClient
 
 logger = logging.getLogger(__name__)
 
