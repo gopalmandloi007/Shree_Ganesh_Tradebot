@@ -1,5 +1,5 @@
 import logging
-from .api_client import APIClient
+from .session_manager import SessionManager
 from .historical_data import HistoricalDataManager
 
 logger = logging.getLogger(__name__)
