@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-from core.api_client import APIClient
+from tradebot.api_client import APIClient
 from core.symbol_manager import SymbolManager
 from core.order_manager import OrderManager
 from core.historical_data import HistoricalData
