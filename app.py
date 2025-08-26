@@ -1,16 +1,13 @@
-import os
 import streamlit as st
 from tradebot.session_manager import SessionManager, SessionError
 
 st.set_page_config(page_title="TradeBot Login", layout="wide")
 st.title("🔐 Definedge Auth (TOTP + OTP)")
 
-with st.sidebar:
-    st.subheader("Secrets / Env")
-    st.caption("Prefer Streamlit Secrets on Cloud (Settings → Secrets)")
-    api_token = st.text_input("API Token", value=st.secrets.get("api_token", os.getenv("DEFINEDGE_API_TOKEN", "")))
-    api_secret = st.text_input("API Secret", value=st.secrets.get("api_secret", os.getenv("DEFINEDGE_API_SECRET", "")), type="password")
-    totp_secret = st.text_input("TOTP Secret (optional)", value=st.secrets.get("totp_secret", os.getenv("DEFINEDGE_TOTP_SECRET", "")), type="password")
+# ✅ Directly fetch secrets from Streamlit Cloud
+api_token = st.secrets["DEFINEDGE_API_TOKEN"]
+api_secret = st.secrets["DEFINEDGE_API_SECRET"]
+totp_secret = st.secrets.get("DEFINEDGE_TOTP_SECRET")  # optional
 
 sm = SessionManager(api_token=api_token, api_secret=api_secret, totp_secret=totp_secret)
 
@@ -21,7 +18,11 @@ with col1:
         try:
             data = sm.login(prefer_totp=True)
             st.success("Logged in with TOTP ✅")
-            st.json({"uid": sm.uid, "api_session_key_present": bool(sm.api_session_key), "susertoken_present": bool(sm.susertoken)})
+            st.json({
+                "uid": sm.uid, 
+                "api_session_key_present": bool(sm.api_session_key), 
+                "susertoken_present": bool(sm.susertoken)
+            })
         except SessionError as e:
             st.error(str(e))
 
@@ -31,7 +32,7 @@ with col2:
         try:
             otp_token = sm.login_step1()
             st.session_state["otp_token"] = otp_token
-            st.info(f"otp_token: {otp_token}")
+            st.info(f"otp_token generated ✅")
         except SessionError as e:
             st.error(str(e))
 
@@ -44,7 +45,11 @@ with col2:
             else:
                 data = sm.login_step2_with_otp(otp_token, otp_code)
                 st.success("Logged in with manual OTP ✅")
-                st.json({"uid": sm.uid, "api_session_key_present": bool(sm.api_session_key), "susertoken_present": bool(sm.susertoken)})
+                st.json({
+                    "uid": sm.uid, 
+                    "api_session_key_present": bool(sm.api_session_key), 
+                    "susertoken_present": bool(sm.susertoken)
+                })
         except SessionError as e:
             st.error(str(e))
 
