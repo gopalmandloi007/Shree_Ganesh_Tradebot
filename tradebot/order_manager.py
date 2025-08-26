@@ -1,7 +1,7 @@
 # core/order_manager.py
 
 import logging
-from core.api_client import APIClient
+from .api_client import APIClient
 
 logger = logging.getLogger(__name__)
 
